@@ -34,13 +34,20 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/txtContra"
+            android:id="@+id/txtContrasena"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
             android:hint="Contraseña"
             android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/txtOlvido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="¿Olvidaste tu contraseña?" />
 
         <Button
             android:id="@+id/btnIngresar"

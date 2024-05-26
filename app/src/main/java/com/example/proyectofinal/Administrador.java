@@ -11,6 +11,10 @@ public class Administrador {
         this.contrasena = contrasena;
     }
 
+    public Administrador() {
+
+    }
+
     public String getIdAdministrador() {
         return idAdministrador;
     }
