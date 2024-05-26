@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/cartelera"
+        android:icon="@drawable/baseline_movie_24"
+        android:title="Cartelera" />
+    <item
+        android:id="@+id/teatro"
+        android:icon="@drawable/baseline_add_home_work_24"
+        android:title="Teatro" />
+    <item
+        android:id="@+id/conocenos"
+        android:icon="@drawable/baseline_add_circle_outline_24"
+        android:title="Conocenos" />
+    <item
+        android:id="@+id/cuenta"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="Mi cuenta" />
+</menu>
