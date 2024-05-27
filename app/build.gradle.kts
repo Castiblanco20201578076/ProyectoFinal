@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.core.ktx)
     implementation(libs.volley)
+    implementation("com.mysql:mysql-connector-j:8.4.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

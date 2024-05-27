@@ -1,10 +1,14 @@
 package com.example.proyectofinal;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.loader.content.AsyncTaskLoader;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +26,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -32,7 +41,7 @@ import java.util.Map;
  */
 public class CuentaFragment extends Fragment {
 
-    String url = "http://192.168.20.4/ProyectoFinal/login.php", correo, contrasena;
+    String URL = "http://192.168.20.4/ProyectoFinal/";
 
     EditText txtCorreo, txtContrasena;
 
@@ -41,6 +50,131 @@ public class CuentaFragment extends Fragment {
     TextView txtOlvido;
 
     Intent intent;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_cuenta, container, false);
+
+        txtCorreo = view.findViewById(R.id.txtCorreo);
+        txtContrasena = view.findViewById(R.id.txtContrasena);
+        btnIngresar = view.findViewById(R.id.btnIngresar);
+        btnRegistro = view.findViewById(R.id.btnRegistro);
+        txtOlvido = view.findViewById(R.id.txtOlvido);
+
+        btnIngresar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String correo = txtCorreo.getText().toString();
+                String contrasena = txtContrasena.getText().toString();
+
+                if (correo.isEmpty() || contrasena.isEmpty()) {
+                    Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
+                    txtCorreo.requestFocus();
+                } else {
+                    new LoginTask().execute(correo, contrasena);
+                }
+            }
+        });
+
+        return view;
+
+
+    }
+
+    private class LoginTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String correo = params[0];
+            String contrasena = params[1];
+            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/final", "root", "")) {
+                String query = "SELECT * FROM Administrador WHERE correo = ? AND contraseña = ?";
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.setString(1, correo);
+                    statement.setString(2, contrasena);
+
+                    try (ResultSet resultSet = statement.executeQuery()) {
+                        return resultSet.next();
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            if(result){
+                intent = new Intent(getActivity(), AdministradorFragment.class);
+                startActivity(intent);
+            }else {
+                Toast.makeText(getActivity(), "Nombre de usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+
+    private boolean validarLogin(String correo, String contrasena) {
+
+        try (Connection connection = Conexion.getConnection()) {
+            String query = "SELECT * FROM Administrador WHERE email = ? AND contrasena = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, correo);
+                statement.setString(2, contrasena);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    return resultSet.next(); // Devuelve true si se encuentra un resultado
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+        /*StringRequest respuesta;
+        respuesta = new StringRequest(Request.Method.GET, URL + "login.php", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (response.equalsIgnoreCase("ERROR1")) {
+                    Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
+                    txtCorreo.requestFocus();
+                } else if (response.equalsIgnoreCase("ERROR2")) {
+                    Toast.makeText(getActivity(), "El correo o contraseña no son correctas", Toast.LENGTH_SHORT).show();
+                    txtCorreo.setText("");
+                    txtContrasena.setText("");
+                    txtCorreo.requestFocus();
+                } else {
+                    //Inicar la siguiente activity
+                    intent = new Intent(getActivity(), AdministradorFragment.class);
+                    startActivity(intent);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getActivity(), "ERROR AL INICIAR SESION", Toast.LENGTH_SHORT).show();
+                txtCorreo.setText("");
+                txtContrasena.setText("");
+                txtCorreo.requestFocus();
+            }
+        }
+        ){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError{
+                Map<String, String> parametros = new Hashtable<>();
+                parametros.put("email", txtCorreo.getText().toString());
+                parametros.put("contrasena", txtContrasena.getText().toString());
+                return parametros;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(respuesta);*/
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -80,74 +214,5 @@ public class CuentaFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        txtCorreo = txtCorreo.findViewById(R.id.txtCorreo);
-        txtContrasena = txtContrasena.findViewById(R.id.txtContrasena);
-        txtOlvido = txtOlvido.findViewById(R.id.txtOlvido);
-        btnIngresar = btnIngresar.findViewById(R.id.btnIngresar);
-        btnRegistro = btnRegistro.findViewById(R.id.btnRegistro);
-
-        btnIngresar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                correo = txtCorreo.getText().toString();
-                contrasena = txtContrasena.getText().toString();
-
-                if (correo.equals("") || contrasena.equals("")) {
-                    Toast.makeText(getContext().getApplicationContext(), "Los datos son obligatorios", Toast.LENGTH_SHORT).show();
-                    txtCorreo.requestFocus();
-                } else {
-                    validarUsuario(url + "login.php");
-                }
-            }
-        });
-    }
-
-    private void validarUsuario(String URL) {
-
-        StringRequest respuesta = new StringRequest(Request.Method.POST, url + "login.php", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.equalsIgnoreCase("ERROR1")) {
-                    Toast.makeText(getContext().getApplicationContext(), "Completa los datos para continuar", Toast.LENGTH_SHORT).show();
-                    txtCorreo.requestFocus();
-                } else if (response.equalsIgnoreCase("ERROR2")) {
-                    Toast.makeText(getContext().getApplicationContext(), "El correo o contraseña son incorrectos", Toast.LENGTH_SHORT).show();
-                    txtCorreo.setText("");
-                    txtContrasena.setText("");
-                    txtCorreo.requestFocus();
-                } else {
-                    intent = new Intent(getContext().getApplicationContext(), AdministradorFragment.class);
-                    startActivity(intent);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext().getApplicationContext().getApplicationContext(), "Erro de Conexión", Toast.LENGTH_SHORT).show();
-                txtCorreo.setText("");
-                txtContrasena.setText("");
-                txtCorreo.requestFocus();
-            }
-        }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError{
-                Map<String, String> parametros = new Hashtable<>();
-                parametros.put("email", txtCorreo.getText().toString());
-                parametros.put("contrasena", txtContrasena.getText().toString());
-                return parametros;
-            }
-        };
-        RequestQueue requestQueue= Volley.newRequestQueue(getContext().getApplicationContext());
-        requestQueue.add(respuesta);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cuenta, container, false);
     }
 }
