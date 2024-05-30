@@ -1,5 +1,6 @@
 package com.example.proyectofinal;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.content.AsyncTaskLoader;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,8 @@ import java.util.Map;
  */
 public class CuentaFragment extends Fragment {
 
+    String url = "http://localhost/ProyectoFinal/login.php";
+
     EditText txtCorreo, txtContrasena;
 
     Button btnIngresar, btnRegistro;
@@ -78,7 +82,7 @@ public class CuentaFragment extends Fragment {
                     Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
                     txtCorreo.requestFocus();
                 } else {
-                    new LoginTask().execute(correo, contrasena);
+                    validarLogin(url);
                 }
             }
         });
@@ -86,17 +90,17 @@ public class CuentaFragment extends Fragment {
         return view;
     }
 
-    private class LoginTask extends AsyncTask<String, Void, String> {
+   /*private class LoginTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            String correo = params[0];
-            String contrasena = params[1];
+            String correo = "criscast2602@gmail.com";
+            String contrasena = "1234";
             try {
-                URL url = new URL("http://192.168.20.4/login.php");
+                URL url = new URL("http://localhost/ProyectoFinal/login.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "aplicarion/json, charset=UTF-8");
-                conn.setRequestProperty("Accept", "aplicarion/json");
+                conn.setRequestProperty("Content-Type", "aplication/json, charset=UTF-8");
+                conn.setRequestProperty("Accept", "aplication/json");
                 conn.setDoOutput(true);
 
                 JSONObject json = new JSONObject();
@@ -143,9 +147,9 @@ public class CuentaFragment extends Fragment {
                 Toast.makeText(getActivity(), "No se pudo conectar con el servidor", Toast.LENGTH_SHORT).show();
             }
         }
-    }
+    }*/
 
-    /*private void validarLogin(String link) {
+    private void validarLogin(String link) {
 
         final String correo = txtCorreo.getText().toString().trim();
         final String contrasena = txtContrasena.getText().toString().trim();
@@ -187,7 +191,7 @@ public class CuentaFragment extends Fragment {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(respuesta);
-    }*/
+    }
 
 
     // TODO: Rename parameter arguments, choose names that match
