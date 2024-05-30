@@ -1,22 +1,28 @@
 <?php
 header("Content-Type: application/json");
+require_once("./conexion.php");
 
-// Configuración de la base de datos
-$servername = "192.168.20.4";
-$username = "root";
-$password = "";
-$dbname = "final";
+$link =conectar();
 
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
+$email = $_POST['email'];
+$contrasena = $_POST['password'];
 
-// Verificar conexión
-if ($conn->connect_error) {
-    die(json_encode(array("success" => false, "message" => "Connection failed: " . $conn->connect_error)));
+$sql = "SELECT * FROM Administrador WHERE  email = '".$email."' AND contrasena = '".$contrasena."'";
+
+
+if($email == ""  || $contrasena == ""){
+    echo  "ERROR1";
+}else{
+    $consula = mysqli_query($link, $sql) or die (mysqli_error());
+    if(mysqli_num_rows($consula)==0){
+        echo "ERROR2";
+    }else{
+        echo "ACCESO";
+    }
 }
 
 // Obtener datos del cuerpo de la solicitud
-$data = json_decode(file_get_contents("php://input"), true);
+/*$data = json_decode(file_get_contents("php://input"), true);
 
 if (isset($data['email']) && isset($data['contrasena'])) {
     $email = $data['email'];
@@ -39,6 +45,6 @@ if (isset($data['email']) && isset($data['contrasena'])) {
     echo json_encode(array("success" => false, "message" => "Username and password required"));
 }
 
-$conn->close();
+$conn->close();*/
 ?>
 
