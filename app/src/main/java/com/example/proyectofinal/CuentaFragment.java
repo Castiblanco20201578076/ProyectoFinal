@@ -26,11 +26,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -40,8 +48,6 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class CuentaFragment extends Fragment {
-
-    String URL = "http://192.168.20.4/ProyectoFinal/";
 
     EditText txtCorreo, txtContrasena;
 
@@ -56,7 +62,6 @@ public class CuentaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_cuenta, container, false);
-
         txtCorreo = view.findViewById(R.id.txtCorreo);
         txtContrasena = view.findViewById(R.id.txtContrasena);
         btnIngresar = view.findViewById(R.id.btnIngresar);
@@ -79,63 +84,74 @@ public class CuentaFragment extends Fragment {
         });
 
         return view;
-
-
     }
 
-    private class LoginTask extends AsyncTask<String, Void, Boolean> {
+    private class LoginTask extends AsyncTask<String, Void, String> {
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             String correo = params[0];
             String contrasena = params[1];
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/final", "root", "")) {
-                String query = "SELECT * FROM Administrador WHERE correo = ? AND contraseña = ?";
-                try (PreparedStatement statement = connection.prepareStatement(query)) {
-                    statement.setString(1, correo);
-                    statement.setString(2, contrasena);
+            try {
+                URL url = new URL("http://192.168.20.4/login.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "aplicarion/json, charset=UTF-8");
+                conn.setRequestProperty("Accept", "aplicarion/json");
+                conn.setDoOutput(true);
 
-                    try (ResultSet resultSet = statement.executeQuery()) {
-                        return resultSet.next();
+                JSONObject json = new JSONObject();
+                json.put("email", correo);
+                json.put("contrasena", contrasena);
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    byte[] input = json.toString().getBytes("UTF-8");
+                    os.write(input, 0, input.length);
+                }
+
+                StringBuilder response = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
                     }
                 }
-            } catch (SQLException e) {
+                return response.toString();
+            } catch (Exception e) {
                 e.printStackTrace();
-                return false;
+                return null;
             }
         }
 
         @Override
-        protected void onPostExecute(Boolean result){
-            if(result){
-                intent = new Intent(getActivity(), AdministradorFragment.class);
-                startActivity(intent);
-            }else {
-                Toast.makeText(getActivity(), "Nombre de usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-    }
-
-
-    private boolean validarLogin(String correo, String contrasena) {
-
-        try (Connection connection = Conexion.getConnection()) {
-            String query = "SELECT * FROM Administrador WHERE email = ? AND contrasena = ?";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, correo);
-                statement.setString(2, contrasena);
-
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    return resultSet.next(); // Devuelve true si se encuentra un resultado
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                try {
+                    JSONObject jsonResponse = new JSONObject(result);
+                    boolean success = jsonResponse.getBoolean("success");
+                    String message = jsonResponse.getString("message");
+                    if (success) {
+                        Toast.makeText(getActivity(), "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Ah ocurrido un error", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(getActivity(), "No se pudo conectar con el servidor", Toast.LENGTH_SHORT).show();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
-        /*StringRequest respuesta;
-        respuesta = new StringRequest(Request.Method.GET, URL + "login.php", new Response.Listener<String>() {
+
+    /*private void validarLogin(String link) {
+
+        final String correo = txtCorreo.getText().toString().trim();
+        final String contrasena = txtContrasena.getText().toString().trim();
+
+        StringRequest respuesta;
+        respuesta = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (response.equalsIgnoreCase("ERROR1")) {
@@ -147,7 +163,6 @@ public class CuentaFragment extends Fragment {
                     txtContrasena.setText("");
                     txtCorreo.requestFocus();
                 } else {
-                    //Inicar la siguiente activity
                     intent = new Intent(getActivity(), AdministradorFragment.class);
                     startActivity(intent);
                 }
@@ -160,23 +175,23 @@ public class CuentaFragment extends Fragment {
                 txtContrasena.setText("");
                 txtCorreo.requestFocus();
             }
-        }
-        ){
+        }) {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError{
-                Map<String, String> parametros = new Hashtable<>();
-                parametros.put("email", txtCorreo.getText().toString());
-                parametros.put("contrasena", txtContrasena.getText().toString());
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> parametros = new HashMap<String, String>();
+                parametros.put("email", correo);
+                parametros.put("contrasena", contrasena);
                 return parametros;
             }
-        };
 
+        };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(respuesta);*/
+        requestQueue.add(respuesta);
+    }*/
 
 
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -196,7 +211,7 @@ public class CuentaFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment CuentaFragment.
      */
-    // TODO: Rename and change types and number of parameters
+// TODO: Rename and change types and number of parameters
     public static CuentaFragment newInstance(String param1, String param2) {
         CuentaFragment fragment = new CuentaFragment();
         Bundle args = new Bundle();
