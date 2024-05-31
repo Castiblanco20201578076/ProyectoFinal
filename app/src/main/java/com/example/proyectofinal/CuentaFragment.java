@@ -51,7 +51,7 @@ import java.util.Map;
  */
 public class CuentaFragment extends Fragment {
 
-    String url = "http://192.168.20.4:3306/ProyectoFinal/login.php";
+    String url = "http://192.168.20.4:80/ProyectoFinal/login.php";
 
     EditText txtCorreo, txtContrasena;
 
