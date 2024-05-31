@@ -51,7 +51,7 @@ import java.util.Map;
  */
 public class CuentaFragment extends Fragment {
 
-    String url = "http://localhost:3306/ProyectoFinal/login.php";
+    String url = "http://192.168.20.4:3306/ProyectoFinal/login.php";
 
     EditText txtCorreo, txtContrasena;
 
@@ -81,33 +81,13 @@ public class CuentaFragment extends Fragment {
                 if (correo.isEmpty() || contrasena.isEmpty()) {
                     Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
                     txtCorreo.requestFocus();
-                }else if(validarLogin(correo, contrasena)){
-                    intent = new Intent(getActivity(), AdministradorFragment.class);
-                    startActivity(intent);
-                }else{
-                    Toast.makeText(getActivity(), "El correo o contraseña no son correctas", Toast.LENGTH_SHORT).show();
+                } else {
+                    validarLogin(correo, contrasena, url);
                 }
             }
         });
 
         return view;
-    }
-
-    private boolean validarLogin(String username, String password) {
-        try (Connection connection = Conexion.getConnection()) {
-            String query = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, username);
-                statement.setString(2, password);
-
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    return resultSet.next(); // Devuelve true si se encuentra un resultado
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
    /*private class LoginTask extends AsyncTask<String, Void, String> {
@@ -169,45 +149,57 @@ public class CuentaFragment extends Fragment {
         }
     }*/
 
-    /*private void validarLogin(String correo, String contrasena, String link) {
-
-        StringRequest respuesta = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.equalsIgnoreCase("ERROR1")) {
-                    Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
-                    txtCorreo.requestFocus();
-                } else if (response.equalsIgnoreCase("ERROR2")) {
-                    Toast.makeText(getActivity(), "El correo o contraseña no son correctas", Toast.LENGTH_SHORT).show();
-                    txtCorreo.setText("");
-                    txtContrasena.setText("");
-                    txtCorreo.requestFocus();
-                } else {
-                    intent = new Intent(getActivity(), AdministradorFragment.class);
-                    startActivity(intent);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                txtCorreo.setText("");
-                txtContrasena.setText("");
-                txtCorreo.requestFocus();
-            }
-        }) {
+    private void validarLogin(String correo, String contrasena, String link) {
+        // Crear una solicitud de cadena POST usando Volley
+        StringRequest solicitud = new StringRequest(Request.Method.POST, link,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Manejar la respuesta del servidor
+                        switch (response) {
+                            case "ERROR1":
+                                Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
+                                txtCorreo.requestFocus();
+                                break;
+                            case "ERROR2":
+                                Toast.makeText(getActivity(), "El correo o contraseña no son correctas", Toast.LENGTH_SHORT).show();
+                                txtCorreo.setText("");
+                                txtContrasena.setText("");
+                                txtCorreo.requestFocus();
+                                break;
+                            default:
+                                // Inicio de sesión exitoso
+                                intent = new Intent(getActivity(), AdministradorFragment.class);
+                                startActivity(intent);
+                                break;
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Manejar errores de conexión
+                        Toast.makeText(getActivity(), "Error al conectar con el servidor", Toast.LENGTH_SHORT).show();
+                        txtCorreo.setText("");
+                        txtContrasena.setText("");
+                        txtCorreo.requestFocus();
+                    }
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
+                // Agregar parámetros a la solicitud POST
                 Map<String, String> parametros = new HashMap<>();
                 parametros.put("email", correo);
                 parametros.put("contrasena", contrasena);
                 return parametros;
             }
-
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(respuesta);
-    }*/
+
+        // Agregar la solicitud a la cola de solicitudes de Volley
+        RequestQueue colaSolicitudes = Volley.newRequestQueue(getActivity());
+        colaSolicitudes.add(solicitud);
+    }
+
 
 
     // TODO: Rename parameter arguments, choose names that match
