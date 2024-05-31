@@ -51,7 +51,7 @@ import java.util.Map;
  */
 public class CuentaFragment extends Fragment {
 
-    String url = "http://localhost/ProyectoFinal/login.php";
+    String url = "http://localhost:3306/ProyectoFinal/login.php";
 
     EditText txtCorreo, txtContrasena;
 
@@ -81,13 +81,33 @@ public class CuentaFragment extends Fragment {
                 if (correo.isEmpty() || contrasena.isEmpty()) {
                     Toast.makeText(getActivity(), "Completa los datos", Toast.LENGTH_SHORT).show();
                     txtCorreo.requestFocus();
-                } else {
-                    validarLogin(url);
+                }else if(validarLogin(correo, contrasena)){
+                    intent = new Intent(getActivity(), AdministradorFragment.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getActivity(), "El correo o contraseña no son correctas", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         return view;
+    }
+
+    private boolean validarLogin(String username, String password) {
+        try (Connection connection = Conexion.getConnection()) {
+            String query = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, username);
+                statement.setString(2, password);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    return resultSet.next(); // Devuelve true si se encuentra un resultado
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
    /*private class LoginTask extends AsyncTask<String, Void, String> {
@@ -149,13 +169,9 @@ public class CuentaFragment extends Fragment {
         }
     }*/
 
-    private void validarLogin(String link) {
+    /*private void validarLogin(String correo, String contrasena, String link) {
 
-        final String correo = txtCorreo.getText().toString().trim();
-        final String contrasena = txtContrasena.getText().toString().trim();
-
-        StringRequest respuesta;
-        respuesta = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
+        StringRequest respuesta = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (response.equalsIgnoreCase("ERROR1")) {
@@ -174,7 +190,7 @@ public class CuentaFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(), "ERROR AL INICIAR SESION", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
                 txtCorreo.setText("");
                 txtContrasena.setText("");
                 txtCorreo.requestFocus();
@@ -182,7 +198,7 @@ public class CuentaFragment extends Fragment {
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
+                Map<String, String> parametros = new HashMap<>();
                 parametros.put("email", correo);
                 parametros.put("contrasena", contrasena);
                 return parametros;
@@ -191,7 +207,7 @@ public class CuentaFragment extends Fragment {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(respuesta);
-    }
+    }*/
 
 
     // TODO: Rename parameter arguments, choose names that match
