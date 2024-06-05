@@ -125,11 +125,8 @@ public class CuentaFragment extends Fragment {
                                 txtContrasena.setText("");
                                 txtCorreo.requestFocus();
                                 break;
-                            case "CLIENTE":
-                                navController.navigate(R.id.action_cuentaFragment_to_navClienteFragment);
-                            case "ADMIN":
-                                navController.navigate(R.id.action_cuentaFragment_to_navAdminFragment);
                             default:
+                                navController.navigate(R.id.action_cuentaFragment_to_navAdminFragment);
                                 break;
                         }
                     }
