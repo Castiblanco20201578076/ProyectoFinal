@@ -53,7 +53,15 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.volley)
     implementation("com.mysql:mysql-connector-j:8.4.0")
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    runtimeOnly("androidx.appcompat:appcompat:1.6.1")
+    runtimeOnly("com.google.android.material:material:1.12.0")
+    runtimeOnly("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    runtimeOnly("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+
 }

@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/peliculasAdminFragment"
+            android:icon="@drawable/baseline_movie_24"
+            android:title="Peliculas" />
+        <item
+            android:id="@+id/dispoFragment"
+            android:icon="@drawable/baseline_double_arrow_24"
+            android:title="Disponibilidad" />
+        <item
+            android:id="@+id/listaClientesFragment"
+            android:icon="@drawable/baseline_co_present_24"
+            android:title="Clientes" />
+
+        <item
+            android:id="@+id/reporteVentasFragment"
+            android:icon="@drawable/baseline_collections_bookmark_24"
+            android:title="Reporte de Ventas" />
+
+        <item
+            android:id="@+id/administradorFragment"
+            android:icon="@drawable/baseline_account_circle_24"
+            android:title="Mis Datos" />
+
+    </group>
 
 </menu>

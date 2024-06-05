@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/compraFragment"
+            android:icon="@drawable/baseline_movie_24"
+            android:title="Lista de Compras" />
+        <item
+            android:id="@+id/clienteFragment"
+            android:icon="@drawable/baseline_account_circle_24"
+            android:title="Mis Datos" />
+    </group>
+
+</menu>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cliente_navigation"
+    app:startDestination="@id/clienteFragment">
+
+    <fragment
+        android:id="@+id/clienteFragment"
+        android:name="com.example.proyectofinal.ClienteFragment"
+        android:label="fragment_cliente"
+        tools:layout="@layout/fragment_cliente" />
+    <fragment
+        android:id="@+id/compraFragment"
+        android:name="com.example.proyectofinal.CompraFragment"
+        android:label="fragment_compra"
+        tools:layout="@layout/fragment_compra" />
+    <fragment
+        android:id="@+id/facturaFragment"
+        android:name="com.example.proyectofinal.FacturaFragment"
+        android:label="fragment_factura"
+        tools:layout="@layout/fragment_factura" />
+</navigation>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_navigation"
+    app:startDestination="@id/administradorFragment">
+
+    <fragment
+        android:id="@+id/administradorFragment"
+        android:name="com.example.proyectofinal.AdministradorFragment"
+        android:label="fragment_administrador"
+        tools:layout="@layout/fragment_administrador" />
+    <fragment
+        android:id="@+id/dispoFragment"
+        android:name="com.example.proyectofinal.DispoFragment"
+        android:label="fragment_dispo"
+        tools:layout="@layout/fragment_dispo" />
+    <fragment
+        android:id="@+id/listaClientesFragment"
+        android:name="com.example.proyectofinal.ListaClientesFragment"
+        android:label="fragment_lista_clientes"
+        tools:layout="@layout/fragment_lista_clientes" />
+    <fragment
+        android:id="@+id/peliculasAdminFragment"
+        android:name="com.example.proyectofinal.PeliculasAdminFragment"
+        android:label="fragment_peliculas_admin"
+        tools:layout="@layout/fragment_peliculas_admin" />
+    <fragment
+        android:id="@+id/reporteVentasFragment"
+        android:name="com.example.proyectofinal.ReporteVentasFragment"
+        android:label="fragment_reporte_ventas"
+        tools:layout="@layout/fragment_reporte_ventas" />
+</navigation>

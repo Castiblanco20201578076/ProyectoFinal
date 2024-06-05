@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/carteleraFragment">
+    <fragment
+        android:id="@+id/cuentaFragment"
+        android:name="com.example.proyectofinal.CuentaFragment"
+        android:label="fragment_cuenta"
+        tools:layout="@layout/fragment_cuenta">
+        <action
+            android:id="@+id/action_cuentaFragment_to_registroFragment"
+            app:destination="@id/registroFragment"
+            />
+        <action
+            android:id="@+id/action_cuentaFragment_to_navAdminFragment"
+            app:destination="@id/navAdminFragment" />
+        <action
+            android:id="@+id/action_cuentaFragment_to_navClienteFragment"
+            app:destination="@id/navClienteFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/carteleraFragment"
+        android:name="com.example.proyectofinal.CarteleraFragment"
+        android:label="fragment_cartelera"
+        tools:layout="@layout/fragment_cartelera" />
+    <fragment
+        android:id="@+id/conocenosFragment"
+        android:name="com.example.proyectofinal.ConocenosFragment"
+        android:label="fragment_conocenos"
+        tools:layout="@layout/fragment_conocenos" />
+    <fragment
+        android:id="@+id/registroFragment"
+        android:name="com.example.proyectofinal.RegistroFragment"
+        android:label="fragment_registro"
+        tools:layout="@layout/fragment_registro" />
+    <fragment
+        android:id="@+id/teatroFragment"
+        android:name="com.example.proyectofinal.TeatroFragment"
+        android:label="fragment_teatro"
+        tools:layout="@layout/fragment_teatro" />
+    <fragment
+        android:id="@+id/navClienteFragment"
+        android:name="com.example.proyectofinal.NavClienteFragment"
+        android:label="fragment_nav_cliente"
+        tools:layout="@layout/fragment_nav_cliente" />
+    <fragment
+        android:id="@+id/navAdminFragment"
+        android:name="com.example.proyectofinal.NavAdminFragment"
+        android:label="fragment_nav_admin"
+        tools:layout="@layout/fragment_nav_admin" />
+</navigation>
